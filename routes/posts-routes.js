@@ -1,5 +1,5 @@
 import express from "express";
-import * as usersController from "../controllers/users-controller.js";
+import * as postsController from "../controllers/posts-controller.js";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
@@ -21,18 +21,14 @@ function authenticateToken(req, res, next) {
 }
 
 const router = express.Router();
-router.route("/").get(usersController.getUsers);
+router.route("/").get(postsController.getPosts);
 
-router.route("/register").post(usersController.registerUser);
+router.route("/create").post(authenticateToken, postsController.createPost);
 
 router
   .route("/:id")
-  .get(authenticateToken, usersController.getSingleUser)
-  .put(authenticateToken, usersController.editUser)
-  .delete(authenticateToken, usersController.deleteUser);
-
-router.route("/:id/posts").get(usersController.getUserPosts);
-
-router.route("/login").post(usersController.loginUSer);
+  .get(postsController.getSinglePost)
+  .put(authenticateToken, postsController.editPost)
+  .delete(authenticateToken, postsController.deletePost);
 
 export default router;

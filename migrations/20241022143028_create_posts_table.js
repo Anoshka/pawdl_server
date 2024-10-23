@@ -2,18 +2,13 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-
 export function up(knex) {
   return knex.schema.createTable("posts", (table) => {
-    table.increments("id").primary();
-    table
-      .integer("user_id")
-      .unsigned()
-      .references("users.id")
-      .onUpdate("CASCADE")
-      .onDelete("CASCADE");
+    table.uuid("id").primary();
+    table.string("user_id");
     table.string("image").notNullable();
-    table.integer("likes");
+    table.string("likes");
+    table.string("description");
     table.timestamp("created_at").defaultTo(knex.fn.now());
     table
       .timestamp("updated_at")
@@ -26,5 +21,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-  return knex.schema.dropTable("users");
+  return knex.schema.dropTable("posts");
 }

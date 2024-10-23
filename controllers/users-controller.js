@@ -41,7 +41,7 @@ const getUsers = async (req, res) => {
 
 const getSingleUser = async (req, res) => {
   try {
-    const data = await knex("users").where({ id: req.params.id });
+    const data = await knex("users").where({ id: req.user.id });
     if (data.length === 0) {
       return res.status(404).json({
         message: `user with ID ${req.params.id} not found`,
@@ -81,7 +81,6 @@ const registerUser = async (req, res) => {
     const error = validateFields(requiredFields);
     //Returns a response if any errors are found.
     if (Object.entries(error).length > 0) {
-      console.log("gothere ", error);
       return res.status(400).json({ message: error });
     }
 
@@ -115,11 +114,13 @@ const registerUser = async (req, res) => {
 };
 
 const loginUSer = async (req, res) => {
-  const { username, password } = req.body;
-
+  const { email, password } = req.body;
+  console.log(req.body);
   try {
-    const user = await knex("users").where({ user_name: username }).first();
-    console.log("user is ", user);
+    const user = await knex("users")
+      .where({ contact_email: req.body.email })
+      .first();
+
     if (!user) {
       return res.status(401).json({ message: "Authentication failed" });
     }
@@ -145,7 +146,8 @@ const loginUSer = async (req, res) => {
           expiresIn: "1hr",
         }
       );
-      res.json({ token });
+      console.log("token login is ", token);
+      res.json({ token: token, _id: user.id });
     } else {
       return res
         .status(401)
@@ -199,6 +201,31 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const getUserPosts = async (req, res) => {
+  try {
+    const postsFound = await knex("posts")
+      .join("users", "posts.user_id", "users.id")
+      .select(
+        "posts.id",
+        "posts.image",
+        "posts.likes",
+        "posts.description",
+        "posts.created_at"
+      )
+      .where("users.id", req.params.id);
+
+    if (postsFound.length === 0) {
+      return res.status(404).send(`TNo posts found for user: ${req.params.id}`);
+    }
+    res.status(200).json(postsFound);
+  } catch (error) {
+    console.error("error getting posts: ", { error });
+    res.status(500).json({
+      message: `Unable to retrieve posts data with User ID ${req.params.id}`,
+    });
+  }
+};
+
 export {
   getUsers,
   getSingleUser,
@@ -207,4 +234,5 @@ export {
   loginUSer,
   editUser,
   deleteUser,
+  getUserPosts,
 };

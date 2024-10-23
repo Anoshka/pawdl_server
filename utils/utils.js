@@ -31,9 +31,6 @@ export const validateFields = (fields) => {
 
   // Validates for the required contact email.
   if (foundErrors.contact_email) {
-    console.log("found errors are ", foundErrors);
-    //console.log("val val errors are ", validateEmail(fields.contact_email));
-    console.log("emailval1 is ", fields.contact_email);
     foundErrors.contact_email = "Email is invalid";
   }
   return foundErrors;
