@@ -41,7 +41,7 @@ const getUsers = async (req, res) => {
 
 const getSingleUser = async (req, res) => {
   try {
-    const data = await knex("users").where({ id: req.user.id });
+    const data = await knex("users").where({ id: req.params.id });
     if (data.length === 0) {
       return res.status(404).json({
         message: `user with ID ${req.params.id} not found`,
@@ -202,6 +202,7 @@ const deleteUser = async (req, res) => {
 };
 
 const getUserPosts = async (req, res) => {
+  console.log("getting user posts");
   try {
     const postsFound = await knex("posts")
       .join("users", "posts.user_id", "users.id")
@@ -213,6 +214,7 @@ const getUserPosts = async (req, res) => {
         "posts.created_at"
       )
       .where("users.id", req.params.id);
+    console.log("posts found are ", postsFound);
 
     if (postsFound.length === 0) {
       return res.status(404).send(`TNo posts found for user: ${req.params.id}`);

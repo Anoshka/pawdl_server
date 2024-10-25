@@ -23,8 +23,8 @@ const getPosts = async (req, res) => {
 
 const getSinglePost = async (req, res) => {
   try {
-    console.log("id is ", req.post.id);
-    const data = await knex("posts").where({ id: req.post.id });
+    console.log("id is ", req.params.id);
+    const data = await knex("posts").where({ id: req.params.id });
     if (data.length === 0) {
       return res.status(404).json({
         message: `post with ID ${req.params.id} not found`,
