@@ -3,9 +3,6 @@ import jwt from "jsonwebtoken";
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 function authenticateToken(req, res, next) {
-  // string split example:
-  // "Bearer token"
-  // ["Bearer",  "token"]
   if (!req.headers.authorization) {
     return res.status(401).json({ message: "No JWT provided" });
   }

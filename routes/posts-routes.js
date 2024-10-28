@@ -8,7 +8,6 @@ function authenticateToken(req, res, next) {
   if (!req.headers.authorization) {
     return res.status(401).json({ message: "No JWT provided" });
   }
-  console.log(req.headers.authorization);
   const token = req.headers.authorization.split(" ")[1];
   jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
     if (err) {

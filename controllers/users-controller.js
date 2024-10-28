@@ -77,9 +77,9 @@ const registerUser = async (req, res) => {
       bio: req.body.bio | "",
       location: req.body.location | "",
     };
-    // Object for any found errors.
+
     const error = validateFields(requiredFields);
-    //Returns a response if any errors are found.
+
     if (Object.entries(error).length > 0) {
       return res.status(400).json({ message: error });
     }
@@ -88,7 +88,6 @@ const registerUser = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     allFields.password = await bcrypt.hash(allFields.password, salt);
-    //await allFields.save();
 
     const payload = {
       user: {
@@ -101,12 +100,10 @@ const registerUser = async (req, res) => {
         throw err;
         res.status(404).send("no token");
       }
-      res.json({ token });
+      res.json({ token: token, _id: payload.user.id });
     });
-
     const result = await knex("users").insert(allFields);
     const newUser = await knex("users").where({ id: result[0] });
-    //res.status(201).json(newUser);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Unable to register new user" });
@@ -115,7 +112,6 @@ const registerUser = async (req, res) => {
 
 const loginUSer = async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
   try {
     const user = await knex("users")
       .where({ contact_email: req.body.email })
@@ -146,7 +142,6 @@ const loginUSer = async (req, res) => {
           expiresIn: "1hr",
         }
       );
-      console.log("token login is ", token);
       res.json({ token: token, _id: user.id });
     } else {
       return res
@@ -202,7 +197,6 @@ const deleteUser = async (req, res) => {
 };
 
 const getUserPosts = async (req, res) => {
-  console.log("getting user posts");
   try {
     const postsFound = await knex("posts")
       .join("users", "posts.user_id", "users.id")
@@ -214,7 +208,6 @@ const getUserPosts = async (req, res) => {
         "posts.created_at"
       )
       .where("users.id", req.params.id);
-    console.log("posts found are ", postsFound);
 
     if (postsFound.length === 0) {
       return res.status(404).send(`TNo posts found for user: ${req.params.id}`);
