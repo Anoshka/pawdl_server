@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import bodyParser from "body-parser";
 import { Server } from "socket.io";
 
 // init app
@@ -17,6 +18,7 @@ import chatsRoutes from "./routes/chats-routes.js";
 // middleware for library
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json({ limit: "50mb" })); // allows image uploads
 app.use(express.static("public"));
 
 const io = new Server(5050, {

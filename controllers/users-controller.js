@@ -29,7 +29,13 @@ const validateUser = [
 
 const getUsers = async (req, res) => {
   try {
-    const data = await knex("users");
+    const query = req.query;
+    let data = await knex("users");
+    if ("s" in query) {
+      data = await knex("users")
+        .whereILike("user_name", `%${query.s}%`)
+        .orWhereILike("pet_name", `%${query.s}%`);
+    }
     if (data.length == 0) {
       return res.status(404).send("No users found");
     }
